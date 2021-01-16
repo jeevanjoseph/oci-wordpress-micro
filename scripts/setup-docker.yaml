@@ -1,0 +1,22 @@
+#cloud-config
+groups:
+  - docker
+users:
+  - default 
+  - name: opc
+    groups: docker
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ${public_key_openssh}
+  - name: wordpress
+    groups: opc, docker
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ${public_key_openssh}
+packages:
+ - docker-engine
+ - docker-compose
+runcmd:
+  - [ systemctl, daemon-reload ]
+  - [ systemctl, enable, docker.service ]
+  - [ systemctl, start, --no-block, docker.service ]

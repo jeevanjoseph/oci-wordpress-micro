@@ -35,6 +35,7 @@ variable "linux_os_version" {
 
 variable "admin_password" {
   description = "Password for the admin user for MySQL Database Service"
+  default     = "MySQLPassw0rd!"
 }
 
 variable "admin_username" {
@@ -53,7 +54,7 @@ variable "wp_name" {
 
 variable "wp_password" {
   description = "WordPress Database User Password."
-#  default     = "MyWPpassw0rd!"  
+  default     = "MyWPpassw0rd!"  
 }
 
 variable "wp_schema" {

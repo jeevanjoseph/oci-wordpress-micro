@@ -10,8 +10,9 @@ data "oci_core_images" "InstanceImageOCID" {
   }
 }
 
-data "oci_mysql_mysql_configurations" "shape" {
-    compartment_id = "${var.compartment_ocid}"
-    type = ["DEFAULT"]
-    shape_name = var.mysql_shape
+data "oci_identity_availability_domains" "ADs" {
+
+  compartment_id = var.compartment_ocid
+
 }
+
