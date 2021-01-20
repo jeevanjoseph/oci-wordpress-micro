@@ -44,7 +44,10 @@ resource "oci_core_instance" "service-instance" {
 
   metadata = {
     ssh_authorized_keys = tls_private_key.public_private_key_pair.public_key_openssh
-    user_data           = base64encode(templatefile("./scripts/setup-docker.yaml",{public_key_openssh = tls_private_key.public_private_key_pair.public_key_openssh }))
+    user_data           = base64encode(templatefile("./scripts/setup-docker.yaml",{
+                            public_key_openssh = tls_private_key.public_private_key_pair.public_key_openssh, 
+                            admin_password = var.admin_password,
+                            wp_password = var.wp_password }))
     # mount_target_ip     = data.oci_core_private_ip.mount_target_private_ip.ip_address
     # export_path         = oci_file_storage_export.tehama_room_fs_export.path
   }

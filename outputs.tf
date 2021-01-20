@@ -1,6 +1,6 @@
-# output "wordpress_public_ip" {
-#   value = "${module.wordpress.public_ip}"
-# }
+output "wordpress_public_ip" {
+  value = oci_core_instance.service-instance.public_ip
+}
 
 # output "wordpress_wp-admin_url" {
 #   value = "http://${module.wordpress.public_ip}/wp-admin/"
