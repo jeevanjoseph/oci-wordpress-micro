@@ -1,10 +1,10 @@
 variable "tenancy_ocid" {}
 variable "compartment_ocid" {}
 variable "region" {}
-variable "fingerprint" {}
-variable "private_key_path" {}
-variable "user_ocid" {}
-#variable "availablity_domain_name" {}
+# variable "fingerprint" {}
+# variable "private_key_path" {}
+# variable "user_ocid" {}
+#variable "availability_domain_name" {}
 
 variable "vcn" {
   default = "wpmdsvcn"
@@ -43,9 +43,6 @@ variable "admin_username" {
   default = "admin"
 }
 
-variable "mysql_shape" {
-    default = "VM.Standard.E2.1"
-}
 
 variable "wp_name" {
   description = "WordPress Database User Name."
@@ -62,37 +59,4 @@ variable "wp_schema" {
   default     = "wordpress"  
 }
 
-variable "wp_plugins" {
-  description = "WordPress Plugins"
-  default     = "hello-dolly,elementor"
-}
 
-variable "wp_themes" {
-  description = "A list of WordPress themes to install."
-  default     = "lodestar,twentysixteen"
-}
-
-variable "wp_site_url" {
-  description = "WordPress Site URL"
-  default = "example.com"
-}
-
-variable "wp_site_title" {
-  description = "WordPress Site Title"
-  default = "Yet Another WordPress Site"
-}
-
-variable "wp_site_admin_user" {
-  description = "WordPress Site Admin Username"
-  default = "admin"
-}
-
-variable "wp_site_admin_pass" {
-  description = "WordPress Site Admin Password"
-  default = ""
-}
-
-variable "wp_site_admin_email" {
-  description = "WordPress Site Admin Email"
-  default = "admin@example.com"  
-} 
