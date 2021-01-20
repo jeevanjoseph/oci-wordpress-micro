@@ -1,5 +1,5 @@
-title: "Deploy WordPress CMD on OCI with MDS"
-stackDescription: "Deploy WordPress CMS on OCI with MySQL Database Service"
+title: "Deploy WordPress CMS on OCI compute instances using docker"
+stackDescription: "Deploy containerized WordPress & MySQL on OCI using a single compute instance. "
 schemaVersion: 1.2.0
 version: "20201104"
 locale: "en"
@@ -11,56 +11,68 @@ variableGroups:
   - tenancy_ocid
   - region
 
-- title: Required Configuration
+- title: WordPress Configuration
   visible: true  
   variables:
-  - compartment_ocid
-  - availablity_domain_name 
-  - admin_password
-  - wp_password
-  - wp_site_admin_pass
+    - admin_username
+    - admin_password
+    - wp_name
+    - wp_schema
+    - wp_password
+    - show_advanced
 
 
-- title: Optional Configuration
-  visible: true
+- title: Instance Configuration
+  visible: 
+      and:
+        - show_advanced
   variables:
-  - wp_site_admin_email
-  - wp_site_admin_user
-  - wp_plugins
-  - wp_themes
-  - vcn
-  - vcn_cidr
-  - instance_os
-  - linux_os_version
-  - label_prefix
-  - node_shape
-  - mysql_shape
-  - admin_username
-  - wp_name
-  - wp_schema
-  - wp_site_url
-  - wp_site_title
+    - compartment_ocid
+    - node_shape
+    - availability_domain_name 
+
+
+- title: Network Configuration
+  visible: 
+      and:
+        - show_advanced
+  variables:
+     - vcn
+     - vcn_cidr
 
 variables:
+
+  show_advanced:
+    type: boolean
+    title: "Show advanced options?"
+    description: "Shows advanced options."
+    visible: true
+    default: false
 
   compartment_ocid:
     type: oci:identity:compartment:id
     required: true
-    visibile: true
+    visible: 
+      and:
+        - show_advanced
     title: "Compartment"
-    description: "Compartment where your WordPress and MDS will be deployed."
+    description: "Compartment where your WordPress will be deployed."
 
   region:
     type: oci:identity:region:name
     required: true
-    visibile: true
+    visible: 
+      and:
+        - show_advanced
     title: "Region"
-    description: "Choose Region where your WordPress and MDS will be deployed."
+    description: "Choose Region where your WordPress will be deployed."
 
   availablity_domain_name:
     type: oci:identity:availabilitydomain:name
     required: true
-    visibile: true
+    visible: 
+      and:
+        - show_advanced
     title: "Availability Domain to be chosen"
     description: "Choose Availability Domain where your WordPress and MDS will be deployed."
     dependsOn:
@@ -70,7 +82,7 @@ variables:
   admin_password:
     type: password
     required: true
-    title: "MDS Admin User's Password"
+    title: "MySQL Admin User's Password"
     description: "Choose password for MySQL Database System admin user."
     pattern: "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\\\"\\\\|,.<>\\/?]).{8,32}$"
 
@@ -81,46 +93,22 @@ variables:
     description: "Choose MySQL Password for WordPress User."
     pattern: "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\\\"\\\\|,.<>\\/?]).{8,32}$"
 
-  wp_site_title:
-    type: string
-    required: false
-    visible: true
-    title: "WordPress Site Title"
-    description: "Define WordPress Site Title"
-
-  wp_site_admin_user:
-    type: string
-    required: true
-    visible: true
-    default: "admin"
-    title: "WordPress Site Admin Username"
-    description: "Define WordPress Site Admin Username"
-
-  wp_site_admin_pass:
-    type: password
-    required: true
-    visible: true
-    title: "WordPress Site Admin Password"
-    description: "Define WordPress Site Admin Password"
   
-  wp_site_admin_email:
-    type: string
-    visible: true
-    required: true
-    default: "admin@example.com"
-    title: "WordPress Site Admin Email"
-    description: "Define WordPress Site Admin E-mail"
 
   vcn:
     type: string
-    visible: false
+    visible: 
+      and:
+        - show_advanced
     required: true
     title: "VCN name"
     description: "Type VCN name where your WordPress and MDS will be deployed."
 
   vcn_cidr:
     type: string
-    visible: false
+    visible: 
+      and:
+        - show_advanced
     required: false
     pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
     title: "VCN CIDR"
@@ -129,6 +117,9 @@ variables:
   node_shape:
     type: oci:core:instanceshape:name
     required: false
+    visible: 
+      and:
+        - show_advanced
     title: "Wordpress node shape"
     description: "Choose Instance Shape for WordPress host."
     default: "VM.Standard2.1"
@@ -138,7 +129,9 @@ variables:
   instance_os:
     type: enum
     required: false
-    visible: false
+    visible: 
+      and:
+        - show_advanced
     title: "Instance OS"
     description: "An Operating System that determines the operating system for WordPress host."
     default: "Oracle Linux"
@@ -148,34 +141,14 @@ variables:
   linux_os_version:
     type: enum
     required: false
-    visible: false
+    visible: 
+      and:
+        - show_advanced
     title: "Instance OS version"
     description: "An Operating System version that determines the operating system version for WordPress host."
     default: "7.8"
     enum:
       - "7.8"
-
-  mysql_shape:
-    type: enum
-    required: false
-    default: "VM.Standard.E2.1"
-    title: "MDS Shape"
-    description: "Choose MDS Shape for your WordPress and MDS deployments."
-    enum:
-      - "VM.Standard.E2.1"
-      - "VM.Standard.E2.2"
-      - "VM.Standard.E2.4"  
-      - "VM.Standard.E2.8"
-      - "MySQL.VM.Standard.E3.1.8GB"
-      - "MySQL.VM.Standard.E3.1.16GB"      
-      - "MySQL.VM.Standard.E3.2.32GB"
-      - "MySQL.VM.Standard.E3.4.64GB"
-      - "MySQL.VM.Standard.E3.8.128GB"
-      - "MySQL.VM.Standard.E3.16.256GB"
-      - "MySQL.VM.Standard.E3.24.384GB"
-      - "MySQL.VM.Standard.E3.32.512GB"
-      - "MySQL.VM.Standard.E3.48.768GB"    
-      - "MySQL.VM.Standard.E3.64.1024GB"        
 
   label_prefix:
     type: string
@@ -187,57 +160,38 @@ variables:
   admin_username:
     type: string
     required: false
-    title: "MDS Admin Username"
+    title: "MySQL Admin Username"
     description: "Type MySQL Database Service's admin username."
     minLength: 1
     maxLength: 14
     pattern: "^[a-zA-Z][a-zA-Z0-9]+$"
+    visible: 
+      and:
+        - show_advanced
+  
 
   wp_name:
     type: string
     required: false
-    title: "MDS WordPress Username"
+    title: "MySQL WordPress Username"
     description: "Type MySQL Username for WordPress."
     minLength: 2
     maxLength: 14
     pattern: "^[a-zA-Z][a-zA-Z0-9]+$"
+    visible: 
+      and:
+        - show_advanced
 
   wp_schema:
     type: string
     required: false
-    title: "MDS WordPress Schema"
+    title: "MySQL WordPress Schema"
     description: "Type MySQL Schema/Database for WordPress."
+    visible: 
+      and:
+        - show_advanced
 
-  wp_plugins:
-    type: array
-    items:
-      type: string
-      pattern: "^[a-zA-Z0-9\\-]+$"
-    required: true
-    title: "WordPress Plugins"
-    default: ["hello-dolly","elementor"]
-    minItems: 1
-    uniqueItems: true
-    description: "Define WordPress Plugins to be installed with wp-cli (minimum 1 plugin)."
-
-  wp_themes:
-    type: array
-    items:
-      type: string
-      pattern: "^[a-zA-Z0-9\\-]+$"
-    required: true
-    title: "WordPress Themes"
-    default: ["lodestar", "twentysixteen"]
-    minItems: 1
-    uniqueItems: true
-    description: "Define WordPress Themes to be installed with wp-cli (minimum 1 theme)."
-
-  wp_site_url:
-    type: string
-    required: false
-    title: "WordPress Site URL"
-    description: "Define WordPress Site URL"
-
+  
 outputs:
 
   generated_ssh_private_key:
@@ -245,34 +199,8 @@ outputs:
     displayText: "Generated SSH Private Key"
     type: copyableString
     visible: true
-
-  wordpress_wp-admin_url:
-    title: "WordPress CMS WP-Admin URL"
-    displayText: "WordPress CMS WP-Admin URL"
-    type: string
-    visible: true
-
-  wordpress_wp-admin_user:
-    title: "WordPress CMS WP-Admin User"
-    displayText: "WordPress CMS WP-Admin User"
-    type: string
-    visible: true
-
-  wordpress_wp-admin_password:
-    title: "WordPress CMS WP-Admin Password"
-    displayText: "WordPress CMS WP-Admin Password"
-    type: string
-    visible: true
-
   wordpress_public_ip:
     title: "WordPress CMS Public IP"
     displayText: "WordPress CMS Public IP"
     type: string
     visible: true
-
-  mds_private_ip:
-    title: "MDS Private IP"
-    displayText: "MDS Private IP"
-    type: string
-    visible: true
-    
