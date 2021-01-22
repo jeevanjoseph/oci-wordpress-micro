@@ -1,9 +1,9 @@
 variable "tenancy_ocid" {}
 variable "compartment_ocid" {}
 variable "region" {}
-# variable "fingerprint" {}
-# variable "private_key_path" {}
-# variable "user_ocid" {}
+variable "fingerprint" {}
+variable "private_key_path" {}
+variable "user_ocid" {}
 #variable "availability_domain_name" {}
 
 variable "vcn" {
@@ -31,6 +31,10 @@ variable "instance_os" {
 variable "linux_os_version" {
   description = "Operating system version for all Linux instances"
   default     = "7.8"
+}
+
+variable "public_ssh_key" {
+  default = ""
 }
 
 variable "admin_password" {

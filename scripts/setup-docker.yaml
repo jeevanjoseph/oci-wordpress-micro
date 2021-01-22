@@ -1,51 +1,26 @@
 #cloud-config
+bootcmd:
+  - [ cloud-init-per, once, enable-epel,  yum-config-manager, --enable, ol7_developer_epel]
 groups:
   - docker
 users:
   - default 
-  - name: wordpress
-    groups: opc, docker
+  - name: opc
+    groups: docker
     shell: /bin/bash
     sudo: ALL=(ALL) NOPASSWD:ALL
     ssh_authorized_keys:
       - ${public_key_openssh}
+
 packages:
  - docker-engine
  - docker-compose
-write_files:
-- content: |
-    version: '3.3'
-    services:
-      db:
-        image: mysql:5.7
-        volumes:
-          - db_data:/var/lib/mysql
-        restart: always
-        environment:
-          MYSQL_ROOT_PASSWORD: ${admin_password}
-          MYSQL_DATABASE: wordpress
-          MYSQL_USER: wordpress
-          MYSQL_PASSWORD: ${wp_password}
-
-      wordpress:
-        depends_on:
-          - db
-        image: wordpress:latest
-        ports:
-          - "80:80"
-        restart: always
-        environment:
-          WORDPRESS_DB_HOST: db:3306
-          WORDPRESS_DB_USER: wordpress
-          WORDPRESS_DB_PASSWORD: ${wp_password}
-          WORDPRESS_DB_NAME: wordpress
-    volumes:
-        db_data: {}
-  path: /home/wordpress/wordpress.yaml
-  owner: wordpress:wordpress
+ - certbot
+ - certbot-nginx
+ - certbot-apache
 
 runcmd:
   - [ systemctl, daemon-reload ]
   - [ systemctl, enable, docker.service ]
   - [ systemctl, start, --no-block, docker.service ]
-  - [ docker-compose, -f, /home/wordpress/wordpress.yaml, up, -d ]
+  - [ touch, /tmp/cloud-init-complete ]

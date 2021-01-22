@@ -1,5 +1,5 @@
 output "wordpress_public_ip" {
-  value = oci_core_instance.service-instance.public_ip
+  value = oci_core_instance.WordPress.public_ip
 }
 
 
