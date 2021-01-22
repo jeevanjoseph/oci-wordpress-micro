@@ -33,8 +33,10 @@ services:
     user: xfs
     command: >
       /bin/sh -c '
-      sleep 10;
-      wp core install --path="/var/www/html" --url="http://${wp_site_url}" --title="WordPress on OCI" --admin_user=admin --admin_password=${wp_password} --admin_email=foo@bar.com
+        until wp core install --path="/var/www/html" --url="http://${wp_site_url}" --title="WordPress on OCI" --admin_user=admin --admin_password=${wp_password} --admin_email=foo@bar.com; do
+          echo "WordPress not ready, retrying in 10 seconds..."
+          sleep 10;
+        done      
       '
     # vstm: add shared volume
     volumes:
