@@ -30,6 +30,7 @@ variableGroups:
     - compartment_ocid
     - node_shape
     - availability_domain_name 
+    - generate_public_ssh_key
     - public_ssh_key
 
 
@@ -192,6 +193,14 @@ variables:
       and:
         - show_advanced
 
+  generate_public_ssh_key:
+    type: boolean
+    title: "Auto generate public ssh key?"
+    required: true
+    visible: #($show_advanced  == ""Yes"")
+      and:
+        - show_advanced 
+
   public_ssh_key:
     type: oci:core:ssh:publickey
     title: "Import your own SSH public key"
@@ -203,6 +212,8 @@ variables:
     visible: 
       and:
         - show_advanced
+        - not:
+          - generate_public_ssh_key
 
 
   

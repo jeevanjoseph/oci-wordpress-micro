@@ -1,9 +1,9 @@
 variable "tenancy_ocid" {}
 variable "compartment_ocid" {}
 variable "region" {}
-variable "fingerprint" {}
-variable "private_key_path" {}
-variable "user_ocid" {}
+# variable "fingerprint" {}
+# variable "private_key_path" {}
+# variable "user_ocid" {}
 #variable "availability_domain_name" {}
 
 variable "vcn" {
@@ -33,6 +33,9 @@ variable "linux_os_version" {
   default     = "7.8"
 }
 
+variable "generate_public_ssh_key" {
+  default = true
+}
 variable "public_ssh_key" {
   default = ""
 }
