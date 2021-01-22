@@ -32,10 +32,12 @@ jobs:
           tf_actions_version: 0.12.17
           tf_actions_subcommand: 'apply'
           tf_actions_working_dir: ${{ env.PROJECT_WORKING_DIR }}
-          args: '-var="save_to"="export-dist"'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TF_VAR_TENANCY_OCID: ${{ secrets.TENANCY_OCID}} 
+          TF_VAR_TENANCY_OCID: ${{ secrets.TENANCY_OCID }} 
+          TF_VAR_REGION: ${{ secrets.REGION }} 
+          TF_VAR_COMPARTMENT_OCID: ${{ secrets.COMPARTMENT_OCID }}
+          TF_VARUSER_OCID: ${{ secrets.USER_OCID }}
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
