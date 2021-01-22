@@ -1,8 +1,6 @@
 name: 'simple-orm-stack'
 
 on: [push, pull_request]
-env:
-  PROJECT_WORKING_DIR: '.'
 
 jobs:
   terraform_generate_orm_zip:
