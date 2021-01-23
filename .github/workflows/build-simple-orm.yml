@@ -21,7 +21,7 @@ jobs:
         run: terraform validate
 
       - name: 'Build Stack'
-        run: zip -r wordpress-latest.zip *.tf *.yaml script
+        run: zip -r ${{PROJECT_WORKING_DIR}}wordpress-latest.zip *.tf *.yaml script
       
      
       - name: Create Release
