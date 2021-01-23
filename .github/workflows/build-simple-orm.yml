@@ -20,22 +20,10 @@ jobs:
       - name: 'Terraform Validate'
         run: terraform validate
 
-      - name: 'Terraform Plan'
-        run: terraform plan -var="tenancy_ocid=${{ secrets.TENANCY_OCID }}" -var="region=${{ secrets.REGION }} " -var="compartment_ocid=${{ secrets.COMPARTMENT_OCID }}"
+      - name: 'Build Stack'
+        run: zip -r wordpress-latest.zip *.tf *.yaml script
       
-      - name: 'Terraform Apply'
-        uses: hashicorp/terraform-github-actions@master
-        with:
-          tf_actions_version: 0.12.17
-          tf_actions_subcommand: 'apply'
-          tf_actions_working_dir: ${{ env.PROJECT_WORKING_DIR }}
-          args: '-var="tenancy_ocid= ${{ secrets.TENANCY_OCID }} "'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TF_VAR_TENANCY_OCID: ${{ secrets.TENANCY_OCID }} 
-          TF_VAR_REGION: ${{ secrets.REGION }} 
-          TF_VAR_COMPARTMENT_OCID: ${{ secrets.COMPARTMENT_OCID }}
-          TF_VARUSER_OCID: ${{ secrets.USER_OCID }}
+     
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -56,6 +44,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}${{ env.PROJECT_WORKING_DIR }}export-dist/orm.zip
-          asset_name: orm-stack.zip
+          asset_path: ${{ github.workspace }}${{ env.PROJECT_WORKING_DIR }}wordpress-latest.zip
+          asset_name: wordpress-latest.zip
           asset_content_type: application/zip
