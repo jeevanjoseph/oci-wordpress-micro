@@ -21,13 +21,7 @@ jobs:
         run: terraform validate
 
       - name: 'Terraform Plan'
-        run: terraform plan -var="tenancy_ocid=${{ secrets.TENANCY_OCID }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TF_VAR_TENANCY_OCID: ${{ secrets.TENANCY_OCID }} 
-          TF_VAR_REGION: ${{ secrets.REGION }} 
-          TF_VAR_COMPARTMENT_OCID: ${{ secrets.COMPARTMENT_OCID }}
-          TF_VAR_USER_OCID: ${{ secrets.USER_OCID }}
+        run: terraform plan -var="tenancy_ocid=${{ secrets.TENANCY_OCID }}" -var="region=${{ secrets.REGION }} " -var="compartment_ocid=${{ secrets.COMPARTMENT_OCID }}"
       
       - name: 'Terraform Apply'
         uses: hashicorp/terraform-github-actions@master
