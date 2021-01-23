@@ -1,6 +1,8 @@
 name: 'simple-orm-stack'
 
 on: [push, pull_request]
+env:
+  PROJECT_WORKING_DIR: '/build-orm/'
 
 jobs:
   terraform_generate_orm_zip:
@@ -8,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+      - name: 'Terraform version'
+        run: terraform --version
       - name: 'Terraform Init'
         uses: hashicorp/terraform-github-actions@master
         with:
