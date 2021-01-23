@@ -10,24 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+
       - name: 'Terraform version'
         run: terraform --version
+
       - name: 'Terraform Init'
-        uses: hashicorp/terraform-github-actions@master
-        with:
-          tf_actions_version: 0.12.17
-          tf_actions_subcommand: 'init'
-          tf_actions_working_dir: ${{ env.PROJECT_WORKING_DIR }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: terraform init
+
       - name: 'Terraform Validate'
-        uses: hashicorp/terraform-github-actions@master
-        with:
-          tf_actions_version: 0.12.17
-          tf_actions_subcommand: 'validate'
-          tf_actions_working_dir: ${{ env.PROJECT_WORKING_DIR }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: terraform validate
+        
       - name: 'Terraform Apply'
         uses: hashicorp/terraform-github-actions@master
         with:
