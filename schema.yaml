@@ -1,7 +1,7 @@
-title: "Deploy WordPress CMS on OCI compute instances using docker"
-stackDescription: "Deploy containerized WordPress & MySQL on OCI using a single compute instance. "
-schemaVersion: 1.2.0
-version: "20201104"
+title: "Deploy a containerized WordPress instance on OCI"
+description: "Deploy containerized WordPress & MySQL on OCI using a single compute instance. "
+schemaVersion: 1.1.0
+version: "20190304"
 locale: "en"
 
 variableGroups:
@@ -43,31 +43,30 @@ variableGroups:
      - vcn_cidr
 
 outputGroups:
-  - title: Service Endpoints
-    outputs:
-      - wordpress_public_ip
-      - wordpress_admin_url
-  - title: Generated Passwords
-    outputs:
-      - generated_ssh_private_key
+- title: Service Endpoints
+  outputs:
+    - wordpress_public_ip
+    - wordpress_admin_url
+- title: Generated Passwords
+  outputs:
+    - generated_ssh_private_key
 
 outputs:
   wordpress_public_ip:
-      type: link
-      title: WordPress URL Button
-      displayText: Open WordPress website
+    type: link
+    title: WordPress URL Button
+    description: Open WordPress website
   wordpress_admin_url:
     type: link
     title: WordPress Admin Login
-    displayText: Login to your WordPress installation.
-
+    description: Login to your WordPress installation.
   generated_ssh_private_key:
     title: "Generated SSH Private Key"
-    displayText: "Generated SSH Private Key"
+    description: "Generated SSH Private Key"
     type: copyableString
     visible: true
 
-primaryOutputButton: mushop_url_button
+primaryOutputButton: wordpress_public_ip
 
 variables:
 
