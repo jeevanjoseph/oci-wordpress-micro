@@ -42,6 +42,33 @@ variableGroups:
      - vcn
      - vcn_cidr
 
+outputGroups:
+  - title: Service Endpoints
+    outputs:
+      - wordpress_public_ip
+      - wordpress_admin_url
+  - title: Generated Passwords
+    outputs:
+      - generated_ssh_private_key
+
+outputs:
+  wordpress_public_ip:
+      type: link
+      title: WordPress URL Button
+      displayText: Open WordPress website
+  wordpress_admin_url:
+    type: link
+    title: WordPress Admin Login
+    displayText: Login to your WordPress installation.
+
+  generated_ssh_private_key:
+    title: "Generated SSH Private Key"
+    displayText: "Generated SSH Private Key"
+    type: copyableString
+    visible: true
+
+primaryOutputButton: mushop_url_button
+
 variables:
 
   show_advanced:
@@ -76,24 +103,59 @@ variables:
       and:
         - show_advanced
     title: "Availability Domain to be chosen"
-    description: "Choose Availability Domain where your WordPress and MDS will be deployed."
+    description: "Choose Availability Domain where your WordPress will be deployed."
     dependsOn:
       regionName: ${region}
       compartmentId: ${compartment_ocid}
-
+  admin_username:
+    type: string
+    required: false
+    title: "MySQL Admin Username"
+    description: "Type MySQL Database Service's admin username."
+    minLength: 1
+    maxLength: 14
+    pattern: "^[a-zA-Z][a-zA-Z0-9]+$"
+    visible: 
+      and:
+        - show_advanced
+  
   admin_password:
     type: password
     required: true
+    visible: 
+      and:
+        - show_advanced
     title: "MySQL Admin User's Password"
     description: "Choose password for MySQL Database System admin user."
     pattern: "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\\\"\\\\|,.<>\\/?]).{8,32}$"
 
+  wp_name:
+    type: string
+    required: false
+    title: "MySQL WordPress Username"
+    description: "Type MySQL Username for WordPress."
+    minLength: 2
+    maxLength: 14
+    pattern: "^[a-zA-Z][a-zA-Z0-9]+$"
+    visible: 
+      and:
+        - show_advanced
+
+  wp_schema:
+    type: string
+    required: false
+    title: "MySQL WordPress Schema"
+    description: "Type MySQL Schema/Database for WordPress."
+    visible: 
+      and:
+        - show_advanced
+
   wp_password:
     type: password
     required: true
-    title: "MDS WordPress User's Password"
-    description: "Choose MySQL Password for WordPress User."
-    pattern: "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\\\"\\\\|,.<>\\/?]).{8,32}$"
+    title: "WordPress Admin Password"
+    description: "Choose a Password for WordPress Admin User."
+    #pattern: "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\\\"\\\\|,.<>\\/?]).{8,32}$"
 
   
 
@@ -104,7 +166,7 @@ variables:
         - show_advanced
     required: true
     title: "VCN name"
-    description: "Type VCN name where your WordPress and MDS will be deployed."
+    description: "Type VCN name where your WordPress will be deployed."
 
   vcn_cidr:
     type: string
@@ -114,7 +176,7 @@ variables:
     required: false
     pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
     title: "VCN CIDR"
-    description: "Choose VCN CIDR for your WordPress and MDS deployments."
+    description: "Choose VCN CIDR for your WordPress deployment."
 
   node_shape:
     type: oci:core:instanceshape:name
@@ -159,39 +221,7 @@ variables:
     title: "WordPress Hostname Prefix"
     description: "Type WordPress Hostname Prefix."
 
-  admin_username:
-    type: string
-    required: false
-    title: "MySQL Admin Username"
-    description: "Type MySQL Database Service's admin username."
-    minLength: 1
-    maxLength: 14
-    pattern: "^[a-zA-Z][a-zA-Z0-9]+$"
-    visible: 
-      and:
-        - show_advanced
   
-
-  wp_name:
-    type: string
-    required: false
-    title: "MySQL WordPress Username"
-    description: "Type MySQL Username for WordPress."
-    minLength: 2
-    maxLength: 14
-    pattern: "^[a-zA-Z][a-zA-Z0-9]+$"
-    visible: 
-      and:
-        - show_advanced
-
-  wp_schema:
-    type: string
-    required: false
-    title: "MySQL WordPress Schema"
-    description: "Type MySQL Schema/Database for WordPress."
-    visible: 
-      and:
-        - show_advanced
 
   generate_public_ssh_key:
     type: boolean
@@ -215,17 +245,3 @@ variables:
         - not:
           - generate_public_ssh_key
 
-
-  
-outputs:
-
-  generated_ssh_private_key:
-    title: "Generated SSH Private Key"
-    displayText: "Generated SSH Private Key"
-    type: copyableString
-    visible: true
-  wordpress_public_ip:
-    title: "WordPress CMS Public IP"
-    displayText: "WordPress CMS Public IP"
-    type: string
-    visible: true
