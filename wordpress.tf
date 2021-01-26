@@ -120,7 +120,7 @@ locals  {
     sa-saopaulo-1 = "ocid1.image.oc1.sa-saopaulo-1.aaaaaaaa426ghk7ku5ysklb5wrbd6g5gvf24k5bndxpvdn6uy44wme2n4asq"
     uk-cardiff-1 = "ocid1.image.oc1.uk-cardiff-1.aaaaaaaayiibl7nrv23nljwbleu6aictqagqrxrllrfyzjcds5s2t3xmrw4q"
     uk-london-1 = "ocid1.image.oc1.uk-london-1.aaaaaaaauqkqbhkk3ganayt7xutwvy3jjznmenf2tnrjzyu32wzssaw6fwbq"
-    us-ashburn-1 = "ocid1.image.oc1.iad.aaaaaaaaqdc7jslbtue7abhwvxaq3ihvazfvihhs2rwk2mvciv36v7ux5sda"
+    us-ashburn-1 = "ocid1.image.oc1.iad.aaaaaaaaucibow5chlu4xr3f6dfresk3vdksk3z5b25madfjx2rcljscssja"
     us-gov-ashburn-1 = "ocid1.image.oc3.us-gov-ashburn-1.aaaaaaaarlix5x3p27nv7jp6iwefpekn7ui5ogqkcj3jspis2ygxfjjh72cq"
     us-gov-chicago-1 = "ocid1.image.oc3.us-gov-chicago-1.aaaaaaaak3jk4wkn3g4vhkrjcgg6v7ixxrmcsxja5bjsfnuoj5bsfaodq2fq"
     us-gov-phoenix-1 = "ocid1.image.oc3.us-gov-phoenix-1.aaaaaaaa4wktlpy2o2pxcmkbxbbx4wppwd3dxplsez6npskttyykobr554ca"
