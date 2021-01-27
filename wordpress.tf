@@ -3,11 +3,15 @@ data "template_file" "wordpress-docker-compose" {
   template = file("${path.module}/scripts/wordpress.yaml")
 
   vars = {
-    public_key_openssh = tls_private_key.public_private_key_pair.public_key_openssh, 
-    admin_password = var.admin_password,
-    wp_password = var.wp_password
-    wp_site_url         = oci_core_public_ip.WordPress_public_ip.ip_address
-  }  
+    public_key_openssh  = tls_private_key.public_private_key_pair.public_key_openssh,
+    mysql_root_password = var.mysql_root_password,
+    wp_schema           = var.wp_schema,
+    wp_db_user          = var.wp_db_user,
+    wp_db_password      = var.wp_db_password,
+    wp_site_url         = oci_core_public_ip.WordPress_public_ip.ip_address,
+    wp_admin_user          = var.wp_admin_user,
+    wp_admin_password      = var.wp_admin_password
+  }
 }
 
 
@@ -30,11 +34,7 @@ resource "oci_core_instance" "WordPress" {
 
   metadata = {
     ssh_authorized_keys = var.generate_public_ssh_key ? tls_private_key.public_private_key_pair.public_key_openssh : var.public_ssh_key
-    user_data           = base64encode(templatefile("./scripts/setup-docker.yaml",{
-                            public_key_openssh = tls_private_key.public_private_key_pair.public_key_openssh, 
-                            admin_password = var.admin_password,
-                            wp_password = var.wp_password }))
-    
+    user_data           = base64encode(templatefile("./scripts/setup-docker.yaml",{}))
   }
 
 }
@@ -67,7 +67,7 @@ resource "null_resource" "WordPress_provisioner" {
     content     = data.template_file.wordpress-docker-compose.rendered
     destination = "/home/opc/wordpress.yaml"
 
-    connection  {
+    connection {
       type        = "ssh"
       host        = oci_core_public_ip.WordPress_public_ip.ip_address
       agent       = false
@@ -79,7 +79,7 @@ resource "null_resource" "WordPress_provisioner" {
   }
 
   provisioner "remote-exec" {
-    connection  {
+    connection {
       type        = "ssh"
       host        = oci_core_public_ip.WordPress_public_ip.ip_address
       agent       = false
@@ -88,50 +88,50 @@ resource "null_resource" "WordPress_provisioner" {
       private_key = tls_private_key.public_private_key_pair.private_key_pem
 
     }
-   
+
     inline = [
-       "while [ ! -f /tmp/cloud-init-complete ]; do sleep 2; done",
-       "docker-compose -f /home/opc/wordpress.yaml up -d"
+      "while [ ! -f /tmp/cloud-init-complete ]; do sleep 2; done",
+      "docker-compose -f /home/opc/wordpress.yaml up -d"
     ]
 
-   }
+  }
 }
 
 
 
-locals  {
+locals {
   images = {
-    ap-chuncheon-1 = "ocid1.image.oc1.ap-chuncheon-1.aaaaaaaab5hueid2p7xxvvl3yr7j3spxjs3yhxmyo7jh6i5dx3kra3zpsigq"
-    ap-hyderabad-1 = "ocid1.image.oc1.ap-hyderabad-1.aaaaaaaalqmxvz5snhts6ozkowksdv3zwdz4jwpsl27q2cfkudxjsaayabyq"
-    ap-melbourne-1 = "ocid1.image.oc1.ap-melbourne-1.aaaaaaaayvmfy6zxbai74w2jgmhhhapq2agwx3gaintugyjlw2k5r2ripwmq"
-    ap-mumbai-1 = "ocid1.image.oc1.ap-mumbai-1.aaaaaaaa7oaxxmtsvkk5vc53bryvxlxqn7lb5bjemkhbw5newm7oulnzquwq"
-    ap-osaka-1 = "ocid1.image.oc1.ap-osaka-1.aaaaaaaaarnsy2bkeenaygvmkdpckjetjy4kfwvne7vyrqecjriqvw7b7xwa"
-    ap-seoul-1 = "ocid1.image.oc1.ap-seoul-1.aaaaaaaaybdqvkups2oaz5vn4fk4ck3flwstbpjhz25pfmz4duzja3huvzra"
-    ap-sydney-1 = "ocid1.image.oc1.ap-sydney-1.aaaaaaaakfscrhq4nmvzs3n6tt6hhe6fjb63ui5g3fphkhjhwntz4cqpwquq"
-    ap-tokyo-1 = "ocid1.image.oc1.ap-tokyo-1.aaaaaaaazitsi3g3qp4h3ww37vigol7qynaulhltpk6z6oub5d7dqjhznh4a"
-    ca-montreal-1 = "ocid1.image.oc1.ca-montreal-1.aaaaaaaaicftckdcfi2ubahzl2maf7dfqltbr5cr757n3hxgtunzvmw7tt3a"
-    ca-toronto-1 = "ocid1.image.oc1.ca-toronto-1.aaaaaaaafrnmvd4uopmz6vj36rqpifvigzb3khhrcjvendo6bf5aqaghsoia"
-    eu-amsterdam-1 = "ocid1.image.oc1.eu-amsterdam-1.aaaaaaaa2tz7mwkc5upj3mpm4ofayqzypqtdwwznl3tf4vi6cimskadwggsa"
-    eu-frankfurt-1 = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaa5w2lrmsn6wpjn7fbqv55curiarwsryqhoj4dw5hsixrl37hrinja"
-    eu-zurich-1 = "ocid1.image.oc1.eu-zurich-1.aaaaaaaaq34sljrwq6ifcdfwlmewg3cfm3sael5r4hgflny6zdjb3xc7jkaq"
-    me-dubai-1 = "ocid1.image.oc1.me-dubai-1.aaaaaaaa2mkz4tjbo6rtyxvhfakkvvwg56mhqlu42xlakq23xwgotdmrmvwa"
-    me-jeddah-1 = "ocid1.image.oc1.me-jeddah-1.aaaaaaaawnlta4ua2sytgjsdd7asdb4naqbgpbiycpcmicdpi3jufh2qajuq"
-    sa-santiago-1 = "ocid1.image.oc1.sa-santiago-1.aaaaaaaaiy6oob3asj3vq2rqiti7ud6ifbvt5uwylsemgdkcslqndlfvwnja"
-    sa-saopaulo-1 = "ocid1.image.oc1.sa-saopaulo-1.aaaaaaaa426ghk7ku5ysklb5wrbd6g5gvf24k5bndxpvdn6uy44wme2n4asq"
-    uk-cardiff-1 = "ocid1.image.oc1.uk-cardiff-1.aaaaaaaayiibl7nrv23nljwbleu6aictqagqrxrllrfyzjcds5s2t3xmrw4q"
-    uk-london-1 = "ocid1.image.oc1.uk-london-1.aaaaaaaauqkqbhkk3ganayt7xutwvy3jjznmenf2tnrjzyu32wzssaw6fwbq"
-    us-ashburn-1 = "ocid1.image.oc1.iad.aaaaaaaaucibow5chlu4xr3f6dfresk3vdksk3z5b25madfjx2rcljscssja"
+    ap-chuncheon-1   = "ocid1.image.oc1.ap-chuncheon-1.aaaaaaaab5hueid2p7xxvvl3yr7j3spxjs3yhxmyo7jh6i5dx3kra3zpsigq"
+    ap-hyderabad-1   = "ocid1.image.oc1.ap-hyderabad-1.aaaaaaaalqmxvz5snhts6ozkowksdv3zwdz4jwpsl27q2cfkudxjsaayabyq"
+    ap-melbourne-1   = "ocid1.image.oc1.ap-melbourne-1.aaaaaaaayvmfy6zxbai74w2jgmhhhapq2agwx3gaintugyjlw2k5r2ripwmq"
+    ap-mumbai-1      = "ocid1.image.oc1.ap-mumbai-1.aaaaaaaa7oaxxmtsvkk5vc53bryvxlxqn7lb5bjemkhbw5newm7oulnzquwq"
+    ap-osaka-1       = "ocid1.image.oc1.ap-osaka-1.aaaaaaaaarnsy2bkeenaygvmkdpckjetjy4kfwvne7vyrqecjriqvw7b7xwa"
+    ap-seoul-1       = "ocid1.image.oc1.ap-seoul-1.aaaaaaaaybdqvkups2oaz5vn4fk4ck3flwstbpjhz25pfmz4duzja3huvzra"
+    ap-sydney-1      = "ocid1.image.oc1.ap-sydney-1.aaaaaaaakfscrhq4nmvzs3n6tt6hhe6fjb63ui5g3fphkhjhwntz4cqpwquq"
+    ap-tokyo-1       = "ocid1.image.oc1.ap-tokyo-1.aaaaaaaazitsi3g3qp4h3ww37vigol7qynaulhltpk6z6oub5d7dqjhznh4a"
+    ca-montreal-1    = "ocid1.image.oc1.ca-montreal-1.aaaaaaaaicftckdcfi2ubahzl2maf7dfqltbr5cr757n3hxgtunzvmw7tt3a"
+    ca-toronto-1     = "ocid1.image.oc1.ca-toronto-1.aaaaaaaafrnmvd4uopmz6vj36rqpifvigzb3khhrcjvendo6bf5aqaghsoia"
+    eu-amsterdam-1   = "ocid1.image.oc1.eu-amsterdam-1.aaaaaaaa2tz7mwkc5upj3mpm4ofayqzypqtdwwznl3tf4vi6cimskadwggsa"
+    eu-frankfurt-1   = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaa5w2lrmsn6wpjn7fbqv55curiarwsryqhoj4dw5hsixrl37hrinja"
+    eu-zurich-1      = "ocid1.image.oc1.eu-zurich-1.aaaaaaaaq34sljrwq6ifcdfwlmewg3cfm3sael5r4hgflny6zdjb3xc7jkaq"
+    me-dubai-1       = "ocid1.image.oc1.me-dubai-1.aaaaaaaa2mkz4tjbo6rtyxvhfakkvvwg56mhqlu42xlakq23xwgotdmrmvwa"
+    me-jeddah-1      = "ocid1.image.oc1.me-jeddah-1.aaaaaaaawnlta4ua2sytgjsdd7asdb4naqbgpbiycpcmicdpi3jufh2qajuq"
+    sa-santiago-1    = "ocid1.image.oc1.sa-santiago-1.aaaaaaaaiy6oob3asj3vq2rqiti7ud6ifbvt5uwylsemgdkcslqndlfvwnja"
+    sa-saopaulo-1    = "ocid1.image.oc1.sa-saopaulo-1.aaaaaaaa426ghk7ku5ysklb5wrbd6g5gvf24k5bndxpvdn6uy44wme2n4asq"
+    uk-cardiff-1     = "ocid1.image.oc1.uk-cardiff-1.aaaaaaaayiibl7nrv23nljwbleu6aictqagqrxrllrfyzjcds5s2t3xmrw4q"
+    uk-london-1      = "ocid1.image.oc1.uk-london-1.aaaaaaaauqkqbhkk3ganayt7xutwvy3jjznmenf2tnrjzyu32wzssaw6fwbq"
+    us-ashburn-1     = "ocid1.image.oc1.iad.aaaaaaaaucibow5chlu4xr3f6dfresk3vdksk3z5b25madfjx2rcljscssja"
     us-gov-ashburn-1 = "ocid1.image.oc3.us-gov-ashburn-1.aaaaaaaarlix5x3p27nv7jp6iwefpekn7ui5ogqkcj3jspis2ygxfjjh72cq"
     us-gov-chicago-1 = "ocid1.image.oc3.us-gov-chicago-1.aaaaaaaak3jk4wkn3g4vhkrjcgg6v7ixxrmcsxja5bjsfnuoj5bsfaodq2fq"
     us-gov-phoenix-1 = "ocid1.image.oc3.us-gov-phoenix-1.aaaaaaaa4wktlpy2o2pxcmkbxbbx4wppwd3dxplsez6npskttyykobr554ca"
-    us-langley-1 = "ocid1.image.oc2.us-langley-1.aaaaaaaahkwvd2ix7nfz3nykrteghnio6hzrzrxudvwmu47q3swl2eglxrja"
-    us-luke-1 = "ocid1.image.oc2.us-luke-1.aaaaaaaa4zoccgg4qj4uilfyhiwcbupz66fejyyogwbuazyuuennxjtwlvba"
-    us-phoenix-1 = "ocid1.image.oc1.phx.aaaaaaaaptdwhdot3iosccxikn3oqb3l2qew7c5mcryixlulpn4diszgncfq"
-    us-sanjose-1 = "ocid1.image.oc1.us-sanjose-1.aaaaaaaag2fam5xawz7t3ad5u3mzxdhglxeldohlijdsjfaielqluysrc3ga"
+    us-langley-1     = "ocid1.image.oc2.us-langley-1.aaaaaaaahkwvd2ix7nfz3nykrteghnio6hzrzrxudvwmu47q3swl2eglxrja"
+    us-luke-1        = "ocid1.image.oc2.us-luke-1.aaaaaaaa4zoccgg4qj4uilfyhiwcbupz66fejyyogwbuazyuuennxjtwlvba"
+    us-phoenix-1     = "ocid1.image.oc1.phx.aaaaaaaaptdwhdot3iosccxikn3oqb3l2qew7c5mcryixlulpn4diszgncfq"
+    us-sanjose-1     = "ocid1.image.oc1.us-sanjose-1.aaaaaaaag2fam5xawz7t3ad5u3mzxdhglxeldohlijdsjfaielqluysrc3ga"
   }
 
   availability_domain_name = data.oci_identity_availability_domains.ADs.availability_domains[length(data.oci_identity_availability_domains.ADs.availability_domains) - 1].name
 
-  
+
 
 }

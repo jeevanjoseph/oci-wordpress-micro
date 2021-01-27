@@ -14,11 +14,12 @@ variableGroups:
 - title: WordPress Configuration
   visible: true  
   variables:
-    - admin_username
-    - admin_password
-    - wp_name
+    - wp_admin_user
+    - wp_admin_password
+    - mysql_root_password
+    - wp_db_user
     - wp_schema
-    - wp_password
+    - wp_db_password
     - show_advanced
 
 
@@ -107,29 +108,17 @@ variables:
       regionName: ${region}
       compartmentId: ${compartment_ocid}
   
-  admin_username:
-    type: string
-    required: false
-    title: "MySQL Admin Username"
-    description: "Type MySQL Database Service's admin username."
-    minLength: 1
-    maxLength: 14
-    pattern: "^[a-zA-Z][a-zA-Z0-9]+$"
-    visible: 
-      and:
-        - show_advanced
-  
-  admin_password:
+  mysql_root_password:
     type: password
-    required: true
+    required: false
     visible: 
       and:
         - show_advanced
-    title: "MySQL Admin User's Password"
-    description: "Choose password for MySQL Database System admin user."
+    title: "MySQL admin password"
+    description: "Choose the password that will be set for the MySQL root superuser account."
     pattern: "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\\\"\\\\|,.<>\\/?]).{8,32}$"
 
-  wp_name:
+  wp_db_user:
     type: string
     required: false
     title: "WordPress database username"
@@ -140,13 +129,16 @@ variables:
     visible: 
       and:
         - show_advanced
-        
-  wp_password:
+
+  wp_db_password:
     type: password
-    required: true
+    required: false
     title: "WordPress database password"
-    description: "Choose a Password for WordPress Admin User."
+    description: "Password for WordPress to connect to the MySQL database."
     #pattern: "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\\\"\\\\|,.<>\\/?]).{8,32}$"
+    visible: 
+      and:
+        - show_advanced
 
   wp_schema:
     type: string
@@ -156,6 +148,23 @@ variables:
     visible: 
       and:
         - show_advanced
+  
+  wp_admin_user:
+    type: string
+    required: true
+    title: "WordPress admin username"
+    description: "The username for the WordPress administrator."
+    minLength: 2
+    maxLength: 14
+    pattern: "^[a-zA-Z][a-zA-Z0-9]+$"
+    visible: true
+
+  wp_admin_password:
+    type: password
+    required: true
+    title: "WordPress admin password"
+    description: "The password for the WordPress administrator account."
+    #pattern: "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\\\"\\\\|,.<>\\/?]).{8,32}$"
   
 
   vcn:

@@ -6,10 +6,10 @@ services:
       - db_data:/var/lib/mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${admin_password}
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: ${wp_password}
+      MYSQL_ROOT_PASSWORD: ${mysql_root_password}
+      MYSQL_DATABASE: ${wp_schema}
+      MYSQL_USER: ${wp_db_user}
+      MYSQL_PASSWORD: ${wp_db_password}
 
   wordpress:
     depends_on:
@@ -20,9 +20,9 @@ services:
     restart: always
     environment:
       WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: ${wp_password}
-      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: ${wp_db_user}
+      WORDPRESS_DB_PASSWORD: ${wp_db_password}
+      WORDPRESS_DB_NAME: ${wp_schema}
     volumes:
       - wp_data:/var/www/html
   wordpress-cli:
@@ -33,7 +33,7 @@ services:
     user: xfs
     command: >
       /bin/sh -c '
-        until wp core install --path="/var/www/html" --url="http://${wp_site_url}" --title="WordPress on OCI" --admin_user=admin --admin_password=${wp_password} --admin_email=foo@bar.com; do
+        until wp core install --path="/var/www/html" --url="http://${wp_site_url}" --title="WordPress on OCI" --admin_user=${wp_admin_user} --admin_password=${wp_admin_password} --admin_email=foo@bar.com; do
           echo "WordPress not ready, retrying in 10 seconds..."
           sleep 10;
         done      
