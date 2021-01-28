@@ -4,7 +4,9 @@ variable "region" {}
 # variable "fingerprint" {}
 # variable "private_key_path" {}
 # variable "user_ocid" {}
-#variable "availability_domain_name" {}
+variable "availability_domain_name" {
+  default = null
+}
 
 
 ## Networking
@@ -29,13 +31,13 @@ variable "label_prefix" {
 }
 
 variable "instance_os" {
-  description = "Operating system for compute instances"
+  description = "Operating system."
   default     = "Oracle Linux"
 }
 
 variable "linux_os_version" {
-  description = "Operating system version for all Linux instances"
-  default     = "7.8"
+  description = "Operating system version."
+  default     = "7.9"
 }
 
 variable "generate_public_ssh_key" {

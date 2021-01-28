@@ -16,11 +16,18 @@ variableGroups:
   variables:
     - wp_admin_user
     - wp_admin_password
+    - show_advanced
+
+- title: MySQL Configuration
+  visible: 
+      and:
+        - show_advanced  
+  variables:
     - mysql_root_password
     - wp_db_user
-    - wp_schema
     - wp_db_password
-    - show_advanced
+    - wp_schema
+
 
 
 - title: Instance Configuration
@@ -29,8 +36,10 @@ variableGroups:
         - show_advanced
   variables:
     - compartment_ocid
-    - node_shape
     - availability_domain_name 
+    - node_shape
+    - instance_os
+    - linux_os_version
     - generate_public_ssh_key
     - public_ssh_key
 
@@ -55,11 +64,11 @@ outputGroups:
 outputs:
   wordpress_public_ip:
     type: link
-    title: WordPress URL Button
+    title: Your WordPress website
     description: Open WordPress website
   wordpress_admin_url:
     type: link
-    title: WordPress Admin Login
+    title: WordPress Login
     description: Login to your WordPress installation.
   generated_ssh_private_key:
     title: "Generated SSH Private Key"
@@ -67,7 +76,7 @@ outputs:
     type: copyableString
     visible: true
 
-primaryOutputButton: wordpress_public_ip
+primaryOutputButton: wordpress_admin_url
 
 variables:
 
@@ -78,36 +87,7 @@ variables:
     visible: true
     default: false
 
-  compartment_ocid:
-    type: oci:identity:compartment:id
-    required: true
-    visible: 
-      and:
-        - show_advanced
-    title: "Compartment"
-    description: "Compartment where your WordPress will be deployed."
-
-  region:
-    type: oci:identity:region:name
-    required: true
-    visible: 
-      and:
-        - show_advanced
-    title: "Region"
-    description: "Choose Region where your WordPress will be deployed."
-
-  availablity_domain_name:
-    type: oci:identity:availabilitydomain:name
-    required: true
-    visible: 
-      and:
-        - show_advanced
-    title: "Availability Domain to be chosen"
-    description: "Choose Availability Domain where your WordPress will be deployed."
-    dependsOn:
-      regionName: ${region}
-      compartmentId: ${compartment_ocid}
-  
+# MySQL
   mysql_root_password:
     type: password
     required: false
@@ -166,7 +146,7 @@ variables:
     description: "The password for the WordPress administrator account."
     #pattern: "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\\\"\\\\|,.<>\\/?]).{8,32}$"
   
-
+# Network
   vcn:
     type: string
     visible: 
@@ -185,6 +165,28 @@ variables:
     pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
     title: "VCN CIDR"
     description: "Choose VCN CIDR for your WordPress deployment."
+
+# Instance 
+  compartment_ocid:
+    type: oci:identity:compartment:id
+    required: true
+    visible: 
+      and:
+        - show_advanced
+    title: "Compartment"
+    description: "Compartment where your WordPress will be deployed."
+
+  availability_domain_name:
+    type: oci:identity:availabilitydomain:name
+    required: true
+    visible: 
+      and:
+        - show_advanced
+    title: "Availability Domain to be chosen"
+    description: "Choose Availability Domain where your WordPress will be deployed."
+    dependsOn:
+      regionName: ${region}
+      compartmentId: ${compartment_ocid}
 
   node_shape:
     type: oci:core:instanceshape:name
