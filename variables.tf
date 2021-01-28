@@ -12,7 +12,7 @@ variable "availability_domain_name" {
 ## Networking
 
 variable "vcn" {
-  default = "wpmdsvcn"
+  default = "wordpress-vcn"
 }
 
 variable "vcn_cidr" {
