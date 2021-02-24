@@ -1,6 +1,12 @@
 name: 'simple-orm-stack'
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - feature/containerized-wordpress
+  pull_request:
+    branches:
+      - master
 env:
   PROJECT_WORKING_DIR: '/build-orm/'
 
@@ -8,6 +14,10 @@ jobs:
   terraform_generate_orm_zip:
     name: 'Generate Stack Package'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: micro-deployment
     steps:
       - uses: actions/checkout@v1
 
